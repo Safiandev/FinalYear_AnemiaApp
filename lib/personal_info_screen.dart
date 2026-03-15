@@ -94,7 +94,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
         border: Border.all(color: Colors.grey.shade300),
       ),
       child: DropdownButtonFormField<String>(
-        value: selectedGender,
+        initialValue: selectedGender,
         decoration: const InputDecoration(
           border: InputBorder.none,
           labelText: "Gender",

@@ -3,7 +3,7 @@ import 'how_to_capture_screen.dart';
 // Import your new feature screens
 import 'previous_reports_screen.dart';
 import 'diet_suggestions_screen.dart';
-import 'symptom_check_screen.dart';
+import 'reminders_screen.dart';
 import 'find_clinics_screen.dart';
 
 class DashboardScreen extends StatelessWidget {
@@ -185,14 +185,14 @@ class DashboardScreen extends StatelessWidget {
                   },
                 ),
                 FeatureCard(
-                  icon: Icons.monitor_heart,
-                  title: 'Symptom Check',
-                  color: Colors.purple,
+                  icon: Icons.alarm, // new icon
+                  title: 'Reminders',
+                  color: Colors.teal,
                   onTap: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const SymptomCheckScreen(),
+                        builder: (context) => const RemindersScreen(),
                       ),
                     );
                   },

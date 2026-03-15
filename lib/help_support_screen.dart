@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'report_problem_screen.dart';
 
 class HelpSupportScreen extends StatelessWidget {
   const HelpSupportScreen({super.key});
@@ -93,7 +94,12 @@ class HelpSupportScreen extends StatelessWidget {
             Center(
               child: ElevatedButton.icon(
                 onPressed: () {
-                  // TODO: Navigate to report issue screen or open a form
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ReportProblemScreen(),
+                    ),
+                  );
                 },
                 icon: const Icon(Icons.report_problem),
                 label: const Text("Report a Problem"),

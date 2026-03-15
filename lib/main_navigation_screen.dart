@@ -3,6 +3,7 @@ import 'dashboard_screen.dart';
 import 'previous_reports_screen.dart';
 import 'eyelid_capture_screen.dart';
 import 'profile_screen.dart';
+import 'insights_UI.dart';
 
 class MainNavigationScreen extends StatefulWidget {
   const MainNavigationScreen({super.key});
@@ -65,7 +66,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 
       const SizedBox(),
 
-      const Center(child: Text("Insights Screen (Coming Soon)")),
+      const InsightsUI(),
 
       const ProfileScreen(),
     ];

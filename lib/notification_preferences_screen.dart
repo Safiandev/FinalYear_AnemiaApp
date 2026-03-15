@@ -217,7 +217,11 @@ class _NotificationPreferencesScreenState
               ],
             ),
           ),
-          Switch(value: value, onChanged: onChanged, activeColor: Colors.blue),
+          Switch(
+            value: value,
+            onChanged: onChanged,
+            activeThumbColor: Colors.blue,
+          ),
         ],
       ),
     );
