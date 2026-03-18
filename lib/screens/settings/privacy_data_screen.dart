@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'change_password_screen.dart';
+import 'package:hemoglobe_ai/screens/profile/change_password_screen.dart';
 
 class PrivacyDataSecurityScreen extends StatefulWidget {
   const PrivacyDataSecurityScreen({super.key});

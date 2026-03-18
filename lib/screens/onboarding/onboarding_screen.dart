@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'signup_screen.dart';
-import 'login_screen.dart';
+import 'package:hemoglobe_ai/screens/auth/signup_screen.dart';
+import 'package:hemoglobe_ai/screens/auth/login_screen.dart';
 
 class OnboardingScreen extends StatelessWidget {
   const OnboardingScreen({super.key});
@@ -76,7 +76,7 @@ class OnboardingScreen extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const SignUpScreen(),
+                              builder: (context) => SignUpScreen(),
                             ),
                           );
                         },
@@ -108,7 +108,7 @@ class OnboardingScreen extends StatelessWidget {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => const LoginScreen(),
+                                builder: (context) => LoginScreen(),
                               ),
                             );
                           },
@@ -130,11 +130,11 @@ class OnboardingScreen extends StatelessWidget {
             const Spacer(),
 
             // -------- FOOTER --------
-            Padding(
-              padding: const EdgeInsets.only(bottom: 20),
+            const Padding(
+              padding: EdgeInsets.only(bottom: 20),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
+                children: [
                   Icon(Icons.verified_user, size: 16, color: Colors.grey),
                   SizedBox(width: 6),
                   Text('Clinically Tested', style: TextStyle(fontSize: 12)),

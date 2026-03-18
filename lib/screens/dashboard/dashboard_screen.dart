@@ -1,52 +1,98 @@
 import 'package:flutter/material.dart';
-import 'how_to_capture_screen.dart';
-// Import your new feature screens
-import 'previous_reports_screen.dart';
-import 'diet_suggestions_screen.dart';
-import 'reminders_screen.dart';
-import 'find_clinics_screen.dart';
+import 'package:intl/intl.dart';
+import 'package:hemoglobe_ai/user_provider.dart';
+import 'package:hemoglobe_ai/how_to_capture_screen.dart';
+import 'package:hemoglobe_ai/diet_suggestions_screen.dart';
+import 'package:hemoglobe_ai/screens/reports/previous_reports_screen.dart';
+import 'package:hemoglobe_ai/screens/settings/reminders_screen.dart';
+import 'package:hemoglobe_ai/screens/find_clinics/find_clinics_screen.dart';
 
-class DashboardScreen extends StatelessWidget {
+class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
 
   @override
+  State<DashboardScreen> createState() => _DashboardScreenState();
+}
+
+class _DashboardScreenState extends State<DashboardScreen> {
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadInitialData();
+  }
+
+  // ✅ Fix: Data fetch karne ke baad UI refresh karna zaroori hai
+  Future<void> _loadInitialData() async {
+    try {
+      // Sirf tabhi fetch karein agar pehle se loaded na ho
+      if (!UserProvider.isDataLoaded) {
+        await UserProvider.initUserData();
+      }
+    } catch (e) {
+      debugPrint("Error loading dashboard data: $e");
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    String formattedDate = DateFormat('EEE, MMM d').format(DateTime.now());
+
     return Scaffold(
       backgroundColor: Colors.white,
-
-      // -------- APP BAR --------
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.white,
-        automaticallyImplyLeading: false, // ✅ Back arrow remove
+        automaticallyImplyLeading: false,
         titleSpacing: 0,
-        title: Row(
-          children: [
-            const SizedBox(width: 16),
-            const CircleAvatar(
-              radius: 18,
-              backgroundColor: Colors.blue,
-              child: Icon(Icons.person, color: Colors.white),
-            ),
-            const SizedBox(width: 10),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
-                Text(
-                  'Hello, Safian',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Text(
-                  'Tue, Oct 24',
-                  style: TextStyle(fontSize: 12, color: Colors.grey),
-                ),
-              ],
-            ),
-          ],
+        title: Padding(
+          padding: const EdgeInsets.only(left: 16),
+          child: Row(
+            children: [
+              const CircleAvatar(
+                radius: 18,
+                backgroundColor: Colors.blue,
+                child: Icon(Icons.person, color: Colors.white),
+              ),
+              const SizedBox(width: 10),
+
+              // ✅ Fixed Name Logic
+              _isLoading
+                  ? const SizedBox(
+                      height: 15,
+                      width: 15,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.blue,
+                      ),
+                    )
+                  : Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Hello, ${UserProvider.userName ?? "User"}',
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          formattedDate,
+                          style:
+                              const TextStyle(fontSize: 12, color: Colors.grey),
+                        ),
+                      ],
+                    ),
+            ],
+          ),
         ),
         actions: const [
           Padding(
@@ -55,14 +101,12 @@ class DashboardScreen extends StatelessWidget {
           ),
         ],
       ),
-
-      // -------- BODY --------
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // -------- START NEW TEST CARD --------
+            // AI POWERED CARD
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
@@ -83,9 +127,7 @@ class DashboardScreen extends StatelessWidget {
                     alignment: Alignment.topRight,
                     child: Container(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 4,
-                      ),
+                          horizontal: 12, vertical: 4),
                       decoration: BoxDecoration(
                         color: Colors.white.withOpacity(0.2),
                         borderRadius: BorderRadius.circular(20),
@@ -144,7 +186,6 @@ class DashboardScreen extends StatelessWidget {
 
             const SizedBox(height: 25),
 
-            // -------- MEDICAL SUITE --------
             const Text(
               'Medical Suite',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -166,8 +207,7 @@ class DashboardScreen extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const PreviousReportsScreen(),
-                      ),
+                          builder: (context) => const PreviousReportsScreen()),
                     );
                   },
                 ),
@@ -179,21 +219,19 @@ class DashboardScreen extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const DietSuggestionsScreen(),
-                      ),
+                          builder: (context) => const DietSuggestionsScreen()),
                     );
                   },
                 ),
                 FeatureCard(
-                  icon: Icons.alarm, // new icon
+                  icon: Icons.alarm,
                   title: 'Reminders',
                   color: Colors.teal,
                   onTap: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const RemindersScreen(),
-                      ),
+                          builder: (context) => const RemindersScreen()),
                     );
                   },
                 ),
@@ -205,8 +243,7 @@ class DashboardScreen extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const FindClinicsScreen(),
-                      ),
+                          builder: (context) => const FindClinicsScreen()),
                     );
                   },
                 ),
@@ -215,10 +252,9 @@ class DashboardScreen extends StatelessWidget {
 
             const SizedBox(height: 25),
 
-            // -------- HEALTH TRENDS --------
-            Row(
+            const Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: const [
+              children: [
                 Text(
                   'Health Trends',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -240,13 +276,11 @@ class DashboardScreen extends StatelessWidget {
                   ),
                 ],
               ),
-              child: Column(
+              child: const Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
-                  Text(
-                    'Hemoglobin Level',
-                    style: TextStyle(color: Colors.grey),
-                  ),
+                children: [
+                  Text('Hemoglobin Level',
+                      style: TextStyle(color: Colors.grey)),
                   SizedBox(height: 5),
                   Text(
                     '14.2 g/dL   +2.1%',
@@ -254,10 +288,8 @@ class DashboardScreen extends StatelessWidget {
                   ),
                   SizedBox(height: 120),
                   Center(
-                    child: Text(
-                      'Graph Placeholder',
-                      style: TextStyle(color: Colors.grey),
-                    ),
+                    child: Text('Graph Placeholder',
+                        style: TextStyle(color: Colors.grey)),
                   ),
                 ],
               ),
@@ -265,15 +297,14 @@ class DashboardScreen extends StatelessWidget {
 
             const SizedBox(height: 20),
 
-            // -------- HEALTH TIP --------
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: Colors.blue.shade50,
                 borderRadius: BorderRadius.circular(16),
               ),
-              child: Row(
-                children: const [
+              child: const Row(
+                children: [
                   Icon(Icons.lightbulb, color: Colors.blue),
                   SizedBox(width: 10),
                   Expanded(
@@ -291,7 +322,7 @@ class DashboardScreen extends StatelessWidget {
   }
 }
 
-// -------- FEATURE CARD WIDGET --------
+// FeatureCard class same rahegi...
 class FeatureCard extends StatelessWidget {
   final IconData icon;
   final String title;

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'report_problem_screen.dart';
+import 'package:hemoglobe_ai/screens/reports/report_problem_screen.dart';
 
 class HelpSupportScreen extends StatelessWidget {
   const HelpSupportScreen({super.key});
@@ -29,9 +29,9 @@ class HelpSupportScreen extends StatelessWidget {
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
             ),
             const SizedBox(height: 10),
-            ExpansionTile(
-              title: const Text("How to update my profile?"),
-              children: const [
+            const ExpansionTile(
+              title: Text("How to update my profile?"),
+              children: [
                 Padding(
                   padding: EdgeInsets.all(8.0),
                   child: Text(
@@ -40,9 +40,9 @@ class HelpSupportScreen extends StatelessWidget {
                 ),
               ],
             ),
-            ExpansionTile(
-              title: const Text("How do I reset my password?"),
-              children: const [
+            const ExpansionTile(
+              title: Text("How do I reset my password?"),
+              children: [
                 Padding(
                   padding: EdgeInsets.all(8.0),
                   child: Text(
@@ -51,9 +51,9 @@ class HelpSupportScreen extends StatelessWidget {
                 ),
               ],
             ),
-            ExpansionTile(
-              title: const Text("How to contact support?"),
-              children: const [
+            const ExpansionTile(
+              title: Text("How to contact support?"),
+              children: [
                 Padding(
                   padding: EdgeInsets.all(8.0),
                   child: Text(

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "848352955305",
+    "project_id": "hemoglobe-ai",
+    "storage_bucket": "hemoglobe-ai.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:848352955305:android:e2cbf6251f73bf09b212b8",
+        "android_client_info": {
+          "package_name": "com.hemoglobe.ai"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDLvBgcjRPvYgyy3toChGUWYzKK8oBq2lA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

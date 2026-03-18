@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'eyelid_capture_screen.dart';
+import 'package:hemoglobe_ai/screens/scan/eyelid_capture_screen.dart';
 
 class HowToCaptureScreen extends StatelessWidget {
   const HowToCaptureScreen({super.key});
@@ -98,7 +98,6 @@ class HowToCaptureScreen extends StatelessWidget {
                     ),
                   );
                 },
-
                 icon: const Icon(Icons.camera_alt),
                 label: const Text(
                   'Start Capture',

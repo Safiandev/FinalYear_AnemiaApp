@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'main_navigation_screen.dart';
+import 'package:hemoglobe_ai/main_navigation_screen.dart';
 
 class InsightsUI extends StatelessWidget {
   const InsightsUI({super.key});
@@ -8,7 +8,6 @@ class InsightsUI extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -31,7 +30,6 @@ class InsightsUI extends StatelessWidget {
           style: TextStyle(color: Colors.black),
         ),
       ),
-
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -44,8 +42,8 @@ class InsightsUI extends StatelessWidget {
                 color: Colors.blue,
                 borderRadius: BorderRadius.circular(16),
               ),
-              child: Column(
-                children: const [
+              child: const Column(
+                children: [
                   Text(
                     "Health Score",
                     style: TextStyle(color: Colors.white70, fontSize: 14),
@@ -120,8 +118,8 @@ class InsightsUI extends StatelessWidget {
                 color: Colors.blue.shade50,
                 borderRadius: BorderRadius.circular(16),
               ),
-              child: Row(
-                children: const [
+              child: const Row(
+                children: [
                   Icon(Icons.lightbulb, color: Colors.blue),
                   SizedBox(width: 10),
                   Expanded(

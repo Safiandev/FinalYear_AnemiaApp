@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'dashboard_screen.dart';
-import 'previous_reports_screen.dart';
-import 'eyelid_capture_screen.dart';
-import 'profile_screen.dart';
-import 'insights_UI.dart';
+import 'package:hemoglobe_ai/screens/dashboard/dashboard_screen.dart';
+import 'package:hemoglobe_ai/screens/reports/previous_reports_screen.dart';
+import 'package:hemoglobe_ai/screens/scan/eyelid_capture_screen.dart';
+import 'package:hemoglobe_ai/screens/profile/profile_screen.dart';
+import 'package:hemoglobe_ai/screens/dashboard/insights_UI.dart';
 
 class MainNavigationScreen extends StatefulWidget {
   const MainNavigationScreen({super.key});
@@ -55,7 +55,6 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 
     screens = [
       const DashboardScreen(),
-
       PreviousReportsScreen(
         onBackToHome: () {
           setState(() {
@@ -63,11 +62,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           });
         },
       ),
-
       const SizedBox(),
-
       const InsightsUI(),
-
       const ProfileScreen(),
     ];
   }

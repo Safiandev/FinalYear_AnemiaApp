@@ -1,111 +1,46 @@
-
-
-# name: my_first_app
-# description: "A new Flutter project."
-# publish_to: 'none'
-
-# version: 1.0.0+1
-
-# environment:
-#   sdk: ">=3.10.0 <4.0.0"
-
-# dependencies:
-#   flutter:
-#     sdk: flutter
-#   cupertino_icons: ^1.0.8
-
-#   # Fixed Firebase versions compatible with Flutter 3.10
-#   firebase_core: ^3.15.2
-#   firebase_auth: ^5.6.0
-
-# dev_dependencies:
-#   flutter_test:
-#     sdk: flutter
-#   flutter_lints: ^6.0.0
-#   shared_preferences: ^2.1.1
-#   flutter_local_notifications: ^13.0.0
-#   timezone: ^0.9.4
-
-# flutter:
-#   uses-material-design: true
-#   assets:
-#     - assets/
-
-
-name: my_first_app
-description: "A new Flutter project."
+name: hemoglobe_ai
+description: "A new Flutter project for Hemoglobe AI"
 publish_to: 'none'
 
 version: 1.0.0+1
 
 environment:
-  sdk: ">=3.10.0 <4.0.0"
+  sdk: '>=3.2.0 <4.0.0'
 
 dependencies:
   flutter:
     sdk: flutter
-  cupertino_icons: ^1.0.8
-  firebase_core: ^3.15.2
-  firebase_auth: ^5.6.0
-  url_launcher: ^6.2.5
+  camera: ^0.11.0
+  permission_handler: ^11.3.1  # Ye line add karein  
+  pdf: ^3.10.8
+  path_provider: ^2.1.2
+  share_plus: ^10.1.0
+  open_filex: ^4.5.0
+    
 
-  # Local storage for saving reminders
-  shared_preferences: ^2.1.1
+  # Firebase Core aur Auth (Latest Stable)
+  firebase_core: ^3.0.0
+  firebase_auth: ^5.0.0
+  firebase_storage: ^12.1.0
+  cloud_firestore: ^5.0.0
 
-  # Notifications
-  flutter_local_notifications: ^17.2.4
+  # Local Notifications (Isay 17+ rakhna zaroori tha error fix karne ke liye)
+  flutter_local_notifications: ^17.2.2
+  
+  # Icons aur UI
+  cupertino_icons: ^1.0.6
   timezone: ^0.9.4
+  image_picker: ^1.2.1
+  shared_preferences: ^2.5.4
+  url_launcher: ^6.3.2
+  intl: ^0.20.2
+  image: ^4.8.0
+  
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^6.0.0
+  flutter_lints: ^3.0.0
 
 flutter:
   uses-material-design: true
-  assets:
-    - assets/
-
-
-
-
-# fonts:
-#   - family: Roboto
-#     fonts:
-#       - asset: assets/fonts/Roboto-Regular.ttf
-
-
-
-
-# name: my_first_app
-# description: "A new Flutter project."
-# publish_to: 'none'
-
-# version: 1.0.0+1
-
-# environment:
-#   sdk: ">=3.10.0 <4.0.0"
-
-# dependencies:
-#   flutter:
-#     sdk: flutter
-#   cupertino_icons: ^1.0.8
-#   firebase_core: ^4.5.0           # Updated to latest stable
-#   firebase_auth: ^6.2.0           # Updated to latest stable
-
-#   # Local storage for saving reminders
-#   shared_preferences: ^2.1.1      # This version is okay
-
-#   # Notifications
-#   flutter_local_notifications: ^21.0.0  # Major update to latest
-#   timezone: ^0.11.0               # Updated to latest stable
-
-# dev_dependencies:
-#   flutter_test:
-#     sdk: flutter
-#   flutter_lints: ^6.0.0           # Updated minor
-
-# flutter:
-#   uses-material-design: true
-#   assets:
-#     - assets/
