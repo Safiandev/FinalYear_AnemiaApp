@@ -1,10 +1,14 @@
-# my_first_app
+# Hemoglobe AI
 
 A new Flutter project.
 
 ## Getting Started
 
 This project is a starting point for a Flutter application.
+
+Key Features: (AI Scan, PDF Export, AI Doctor Consultation).
+
+Tech Stack: (Flutter, Firebase
 
 A few resources to get you started if this is your first Flutter project:
 
