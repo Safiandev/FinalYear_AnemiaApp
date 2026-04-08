@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:hemoglobe_ai/screens/tests/ai_refinement_loading_screen.dart';
 
 class SymptomQuestionnaireScreen extends StatefulWidget {
-  final double? initialHb;
+  final String reportId; // ✅ Removed optional mark, logic requires this ID
+  final double initialHb;
 
   const SymptomQuestionnaireScreen({
     super.key,
-    this.initialHb,
+    required this.reportId, // ✅ Must be passed from Scan screen
+    required this.initialHb,
   });
 
   @override
@@ -16,8 +18,10 @@ class SymptomQuestionnaireScreen extends StatefulWidget {
 
 class _SymptomQuestionnaireScreenState
     extends State<SymptomQuestionnaireScreen> {
+  // Answers list
   List<bool> answers = [false, false, false, false, false, false];
 
+  // Questions list
   final List<String> questions = [
     "Are you feeling tired?",
     "Do you experience dizziness?",
@@ -27,13 +31,18 @@ class _SymptomQuestionnaireScreenState
     "Do you have brittle nails?",
   ];
 
-  // --- CALCULATION LOGIC ---
+  // --- LOGIC: CALCULATION ---
   double getRefinedResult() {
-    double baseHb = widget.initialHb ?? 11.5;
+    double baseHb = widget.initialHb;
     int selectedCount = answers.where((checked) => checked == true).length;
 
     // Har symptom par 0.1 reduction (AI Simulation)
+    // Safian, yahan hum base Hb se symptoms ke mutabiq value refine kar rahe hain
     double finalVal = baseHb - (selectedCount * 0.1);
+
+    // Safety check taake Hb negative na jaye (physically impossible)
+    if (finalVal < 2.0) finalVal = 2.0;
+
     return double.parse(finalVal.toStringAsFixed(1));
   }
 
@@ -61,7 +70,7 @@ class _SymptomQuestionnaireScreenState
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // --- PROGRESS SECTION (STEP 3) ---
+            // --- PROGRESS SECTION ---
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -95,7 +104,7 @@ class _SymptomQuestionnaireScreenState
             ),
             const SizedBox(height: 30),
 
-            // --- HEADER TEXT ---
+            // --- HEADER ---
             const Text(
               "Symptom Check",
               style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
@@ -198,23 +207,23 @@ class _SymptomQuestionnaireScreenState
                 onPressed: () {
                   double finalResult = getRefinedResult();
 
-                  // 1. Pehle selected symptoms ki list banate hain
+                  // 1. Filter selected symptoms
                   List<String> selectedSymptoms = [];
                   for (int i = 0; i < questions.length; i++) {
                     if (answers[i] == true) {
-                      // Hum list mein wahi sawal add kar rahay hain jo user ne tick kiya
                       selectedSymptoms.add(questions[i]);
                     }
                   }
 
-                  // 2. Ab is list ko agay bhej dete hain
+                  // 2. Navigate with Data
+                  // ✅ Passing the same reportId to prevent duplicates
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) => AiRefinementLoadingScreen(
                         refinedHb: finalResult,
-                        selectedSymptoms:
-                            selectedSymptoms, // <--- Ab ye error nahi dega!
+                        selectedSymptoms: selectedSymptoms,
+                        reportId: widget.reportId,
                       ),
                     ),
                   );

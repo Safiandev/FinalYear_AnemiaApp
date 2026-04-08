@@ -4,8 +4,9 @@ import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hemoglobe_ai/user_provider.dart';
+import 'package:hemoglobe_ai/screens/auth/login_screen.dart';
 
-// ✅ SARE IMPORTS ADD KAR DIYE HAIN (Rasta/Path check kar lena)
+// ✅ Imports ko clean rakha hai
 import 'package:hemoglobe_ai/screens/profile/personal_info_screen.dart';
 import 'package:hemoglobe_ai/screens/help/help_support_screen.dart';
 import 'package:hemoglobe_ai/screens/settings/notification_preferences_screen.dart';
@@ -23,6 +24,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Uint8List? _imageBytes;
   final ImagePicker _picker = ImagePicker();
   bool _isUploading = false;
+  // ✅ Yahan sirf aik baar _auth define kiya hai
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   // ------------------- PICK IMAGE -------------------
@@ -145,18 +147,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
             // --- ACCOUNT & HEALTH ---
             _sectionTitle("Account & Health"),
             _profileTile(Icons.person, "Personal Information", () async {
-              // ✅ Hum 'await' lagayenge taake jab user save kar ke wapis aaye toh agli line chale
               await Navigator.push(
                   context,
                   MaterialPageRoute(
                       builder: (context) => const PersonalInfoScreen()));
 
-              // ✅ Jab Navigator.pop hoga, toh ye niche wali line chalay gi aur screen refresh ho jayegi
               if (mounted) {
-                setState(() {
-                  // Is empty setState se Flutter screen ko re-draw karega
-                  // aur UserProvider se naya data utha lega.
-                });
+                setState(() {});
               }
             }),
             _profileTile(Icons.description, "Medical History", () {
@@ -197,7 +194,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
             const SizedBox(height: 30),
 
-            _logoutButton(),
+            // ✅ Yahan 'context' pass kar diya taake error khatam ho jaye
+            _logoutButton(context),
 
             const SizedBox(height: 20),
             const Text(
@@ -242,6 +240,61 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  // --- LOGOUT CONFIRMATION DIALOG ---
+  void _showLogoutDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          title: const Text("Logout Account"),
+          content:
+              const Text("Are you sure you want to logout from your account?"),
+          actions: [
+            // Cancel Button
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Cancel", style: TextStyle(color: Colors.grey)),
+            ),
+            // Confirm Logout Button
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)),
+              ),
+              onPressed: () {
+                Navigator.pop(context); // Dialog band karo
+                _handleLogout(); // Asal logout wala logic chalao
+              },
+              child:
+                  const Text("Logout", style: TextStyle(color: Colors.white)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // --- ACTUAL LOGOUT LOGIC ---
+  Future<void> _handleLogout() async {
+    try {
+      await FirebaseAuth.instance.signOut();
+      UserProvider.clearData();
+      if (mounted) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const LoginScreen()),
+          (route) => false,
+        );
+      }
+      debugPrint("✅ Logout Successful");
+    } catch (e) {
+      debugPrint("❌ Logout Error: $e");
+    }
+  }
+
   Widget _sectionTitle(String title) {
     return Align(
       alignment: Alignment.centerLeft,
@@ -261,7 +314,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       margin: const EdgeInsets.only(bottom: 10),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       child: ListTile(
-        onTap: onTap, // ✅ NAVIGATION AB KAAM KAREGI
+        onTap: onTap,
         leading: CircleAvatar(
           backgroundColor: Colors.blue.shade50,
           child: Icon(icon, color: Colors.blue),
@@ -272,28 +325,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _logoutButton() {
+  Widget _logoutButton(BuildContext context) {
     return InkWell(
-      onTap: () async {
-        await _auth.signOut();
-        UserProvider.clearData();
-        // Navigator logic yahan login screen ke liye dal dena
-      },
+      onTap: () => _showLogoutDialog(),
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.symmetric(vertical: 14),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.red),
+          border: Border.all(color: Colors.red.shade400, width: 1.5),
         ),
         child: const Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.logout, color: Colors.red),
-            SizedBox(width: 8),
+            Icon(Icons.logout_rounded, color: Colors.red, size: 20),
+            SizedBox(width: 10),
             Text(
-              "Logout",
-              style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+              "Logout Account",
+              style: TextStyle(
+                color: Colors.red,
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
             ),
           ],
         ),

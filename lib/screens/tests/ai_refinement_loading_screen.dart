@@ -1,12 +1,20 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hemoglobe_ai/screens/tests/refined_result_screen.dart';
 
 class AiRefinementLoadingScreen extends StatefulWidget {
-  final double refinedHb; // <-- Receiver for the calculated result
+  final double refinedHb;
   final List<String> selectedSymptoms;
-  const AiRefinementLoadingScreen(
-      {super.key, required this.refinedHb, required this.selectedSymptoms});
+  final String reportId; // ✅ FIXED: String? se String kar diya — yeh hamesha
+  //    available hona chahiye. Agar yahan null aata hai toh bug upstream hai.
+
+  const AiRefinementLoadingScreen({
+    super.key,
+    required this.refinedHb,
+    required this.selectedSymptoms,
+    required this.reportId, // ✅ Required — null allow nahi
+  });
 
   @override
   State<AiRefinementLoadingScreen> createState() =>
@@ -17,48 +25,110 @@ class _AiRefinementLoadingScreenState extends State<AiRefinementLoadingScreen> {
   double progress = 0;
   String loadingText = "Analyzing symptoms...";
 
+  // ✅ CRITICAL FIX: Yeh flag ensure karta hai ke Firestore update
+  // sirf ONCE hogi — chahe timer kitni baar bhi chale.
+  bool _isAlreadyUpdated = false;
+  Timer? _timer;
+
   @override
   void initState() {
     super.initState();
     startLoading();
   }
 
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  String _getStatusLabel(double hb) {
+    if (hb < 8.0) return "Severe Anemia";
+    if (hb < 12.0) return "Mild Anemia";
+    return "Normal Range";
+  }
+
+  Future<void> _updateFinalReport() async {
+    // ✅ CRITICAL FIX: Double-update se bachao
+    // Yeh guard ensure karta hai ke sirf EXISTING report update ho,
+    // koi NAYA document kabhi create NA ho is function mein.
+    if (_isAlreadyUpdated || widget.reportId.isEmpty) {
+      debugPrint("⚠️ Update skipped: already done or reportId empty.");
+      return;
+    }
+
+    try {
+      // ✅ .update() use kar rahe hain — .set() ya .add() BILKUL NAHI.
+      // .update() sirf existing document update karta hai.
+      // Agar document exist nahi karta toh yeh ERROR throw karega
+      // (jo actually helpful hai — silently naya doc nahi banega).
+      await FirebaseFirestore.instance
+          .collection('reports')
+          .doc(widget.reportId)
+          .update({
+        'hbValue': widget.refinedHb,
+        'statusLabel': _getStatusLabel(widget.refinedHb),
+        'symptoms': widget.selectedSymptoms,
+        'isCompleted': true, // ✅ Ab yeh report complete ho gayi
+        'lastUpdated': FieldValue.serverTimestamp(),
+      });
+
+      _isAlreadyUpdated = true; // ✅ Flag set — dobara nahi chalega
+      debugPrint("✅ Report Updated Successfully: ${widget.reportId}");
+    } catch (e) {
+      // ✅ Error log karo lekin koi naya document MAT banao
+      debugPrint("❌ Firestore Update Error (no new doc created): $e");
+    }
+  }
+
   void startLoading() {
-    // Timer to update progress and texts for a realistic AI feel
-    Timer.periodic(const Duration(milliseconds: 50), (timer) {
-      if (mounted) {
-        setState(() {
+    // ✅ Background mein update shuru — UI block nahi hoga
+    _updateFinalReport();
+
+    _timer = Timer.periodic(const Duration(milliseconds: 40), (timer) {
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
+
+      setState(() {
+        if (progress < 1.0) {
           progress += 0.01;
 
-          // Changing text based on progress for better UX
-          if (progress > 0.3) loadingText = "Merging eye-scan data...";
-          if (progress > 0.6) loadingText = "Applying ML refinement...";
-          if (progress > 0.8) loadingText = "Finalizing results...";
-        });
-      }
-
-      if (progress >= 1) {
-        timer.cancel();
-
-        // FIXED NAVIGATION: Passing both HB value and Symptoms List
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => RefinedResultScreen(
-              finalHb: widget.refinedHb,
-              // Yahan check karein ke loading screen ke widget mein symptoms ki list ka kya naam hai
-              // Agar widget.selectedSymptoms hai to wahi use karein
-              userSymptoms: widget.selectedSymptoms,
-            ),
-          ),
-        );
-      }
+          if (progress > 0.3 && progress <= 0.6) {
+            loadingText = "Merging eye-scan data...";
+          } else if (progress > 0.6 && progress <= 0.8) {
+            loadingText = "Applying ML refinement...";
+          } else if (progress > 0.8) {
+            loadingText = "Finalizing results...";
+          }
+        } else {
+          timer.cancel();
+          _navigateToResult();
+        }
+      });
     });
+  }
+
+  void _navigateToResult() {
+    if (mounted) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => RefinedResultScreen(
+            finalHb: widget.refinedHb,
+            userSymptoms: widget.selectedSymptoms,
+            reportId: widget.reportId, // ✅ Same ID forward kar do
+          ),
+        ),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    int percent = (progress * 100).toInt();
+    double safeProgress = progress.clamp(0.0, 1.0);
+    int percent = (safeProgress * 100).toInt();
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -68,14 +138,13 @@ class _AiRefinementLoadingScreenState extends State<AiRefinementLoadingScreen> {
         centerTitle: true,
         backgroundColor: Colors.white,
         elevation: 0,
-        automaticallyImplyLeading: false, // Prevent going back during analysis
+        automaticallyImplyLeading: false,
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 30),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // STEP indicator
             const Text(
               "STEP 4 OF 4",
               style: TextStyle(
@@ -84,13 +153,19 @@ class _AiRefinementLoadingScreenState extends State<AiRefinementLoadingScreen> {
                   color: Colors.grey),
             ),
             const SizedBox(height: 40),
-
-            // Icon with soft animation feel
-            const Icon(Icons.psychology_outlined,
-                size: 100, color: Colors.blue),
+            TweenAnimationBuilder(
+              tween: Tween<double>(begin: 0.8, end: 1.1),
+              duration: const Duration(seconds: 1),
+              curve: Curves.easeInOutSine,
+              builder: (context, double value, child) {
+                return Transform.scale(
+                  scale: value,
+                  child: const Icon(Icons.psychology_outlined,
+                      size: 100, color: Colors.blue),
+                );
+              },
+            ),
             const SizedBox(height: 30),
-
-            // Percentage display
             Text(
               "$percent%",
               style: const TextStyle(
@@ -100,32 +175,25 @@ class _AiRefinementLoadingScreenState extends State<AiRefinementLoadingScreen> {
               ),
             ),
             const SizedBox(height: 10),
-
-            // Dynamic loading text
             Text(
               loadingText,
               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
             ),
             const SizedBox(height: 40),
-
-            // Modern progress bar
             ClipRRect(
               borderRadius: BorderRadius.circular(10),
               child: LinearProgressIndicator(
-                value: progress,
+                value: safeProgress,
                 minHeight: 10,
                 backgroundColor: Colors.grey.shade200,
                 color: Colors.blue,
               ),
             ),
-
             const SizedBox(height: 30),
-
-            // Subtitle info
             const Text(
               "Combining your clinical symptoms with visual image data for a precision-refined Hemoglobin estimate.",
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey, height: 1.5),
+              style: TextStyle(color: Colors.grey, height: 1.5, fontSize: 13),
             ),
           ],
         ),
