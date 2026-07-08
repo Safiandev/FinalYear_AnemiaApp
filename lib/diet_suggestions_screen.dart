@@ -468,11 +468,11 @@ class _DietSuggestionsScreenState extends State<DietSuggestionsScreen> {
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(color: Colors.green.shade200),
                 ),
-                child: Row(
+                child: const Row(
                   children: [
-                    const Icon(Icons.tips_and_updates, color: Colors.green),
-                    const SizedBox(width: 12),
-                    const Expanded(
+                    Icon(Icons.tips_and_updates, color: Colors.green),
+                    SizedBox(width: 12),
+                    Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -485,7 +485,7 @@ class _DietSuggestionsScreenState extends State<DietSuggestionsScreen> {
                         ],
                       ),
                     ),
-                    const Icon(Icons.keyboard_arrow_down,
+                    Icon(Icons.keyboard_arrow_down,
                         color: Colors.green, size: 26),
                   ],
                 ),

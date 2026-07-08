@@ -347,10 +347,10 @@ class _RemindersScreenState extends State<RemindersScreen> {
 
     const InitializationSettings initializationSettings =
         InitializationSettings(
-          android: initializationSettingsAndroid,
-          iOS: null,
-          macOS: null,
-        );
+      android: initializationSettingsAndroid,
+      iOS: null,
+      macOS: null,
+    );
 
     await flutterLocalNotificationsPlugin.initialize(initializationSettings);
   }
@@ -366,7 +366,7 @@ class _RemindersScreenState extends State<RemindersScreen> {
       'Reminder',
       title,
       tz.TZDateTime.from(scheduledTime, tz.local),
-      NotificationDetails(
+      const NotificationDetails(
         android: AndroidNotificationDetails(
           'reminder_channel',
           'Reminders',

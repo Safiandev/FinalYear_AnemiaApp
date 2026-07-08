@@ -325,7 +325,7 @@ class _MedicalHistoryScreenState extends State<MedicalHistoryScreen> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: DropdownButtonFormField<String>(
-        value: options.contains(currentVal) ? currentVal : options[0],
+        initialValue: options.contains(currentVal) ? currentVal : options[0],
         decoration: InputDecoration(
             labelText: label,
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),

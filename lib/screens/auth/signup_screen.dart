@@ -166,10 +166,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   controller: _ageController,
                   keyboardType: TextInputType.number,
                   validator: (value) {
-                    if (value == null || value.isEmpty)
+                    if (value == null || value.isEmpty) {
                       return 'Please enter your age';
-                    if (int.tryParse(value) == null)
+                    }
+                    if (int.tryParse(value) == null) {
                       return 'Enter a valid number';
+                    }
                     return null;
                   },
                   decoration: _inputStyle('24', Icons.calendar_today),
@@ -182,8 +184,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
                   validator: (value) {
-                    if (value == null || !value.contains('@'))
+                    if (value == null || !value.contains('@')) {
                       return 'Enter a valid email';
+                    }
                     return null;
                   },
                   decoration: _inputStyle('safian@example.com', Icons.email),

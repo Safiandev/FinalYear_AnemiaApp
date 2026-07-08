@@ -166,7 +166,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
         borderRadius: BorderRadius.circular(12),
       ),
       child: DropdownButtonFormField<String>(
-        value: selectedGender,
+        initialValue: selectedGender,
         decoration: const InputDecoration(
             border: InputBorder.none, labelText: "Gender"),
         items: genderOptions
