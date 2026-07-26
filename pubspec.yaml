@@ -1,49 +1,53 @@
 name: hemoglobe_ai
 description: "A new Flutter project for Hemoglobe AI"
-publish_to: 'none'
+publish_to: "none"
 
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.2.0 <4.0.0'
+  sdk: ">=3.2.0 <4.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
+  shared_preferences: ^2.5.4
+  flutter_local_notifications: ^17.2.2
+  timezone: ^0.9.4
+  fl_chart: ^0.68.0
   camera: ^0.11.0
-  permission_handler: ^11.3.1  # Ye line add karein  
+  permission_handler: ^11.3.1
   pdf: ^3.10.8
   path_provider: ^2.1.2
   share_plus: ^10.1.0
   open_filex: ^4.5.0
-    
 
-  # Firebase Core aur Auth (Latest Stable)
   firebase_core: ^3.0.0
   firebase_auth: ^5.0.0
   firebase_storage: ^12.1.0
   cloud_firestore: ^5.0.0
 
-  # Local Notifications (Isay 17+ rakhna zaroori tha error fix karne ke liye)
-  flutter_local_notifications: ^17.2.2
-  
-  # Icons aur UI
   cupertino_icons: ^1.0.6
-  timezone: ^0.9.4
   image_picker: ^1.2.1
-  shared_preferences: ^2.5.4
   url_launcher: ^6.3.2
   intl: ^0.20.2
   image: ^4.8.0
-  
+  local_auth: ^3.0.2
+  flutter_secure_storage: ^10.3.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^3.0.0
-
+  flutter_launcher_icons: ^0.13.1
 flutter:
   uses-material-design: true
 
   assets:
     - assets/eyelid_guide.png.png
+    - assets/default_avatar2.jpeg
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/icon/app_icon.png"
+  min_sdk_android: 21

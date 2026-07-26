@@ -449,13 +449,13 @@ class _RefinedResultScreenState extends State<RefinedResultScreen> {
                     color: Colors.grey.shade300,
                     borderRadius: BorderRadius.circular(10))),
             const SizedBox(height: 20),
-            Row(
+            const Row(
               children: [
-                const CircleAvatar(
+                CircleAvatar(
                     backgroundColor: Color(0xFF0D47A1),
                     child: Icon(Icons.psychology, color: Colors.white)),
-                const SizedBox(width: 15),
-                const Text("AI Health Advisor",
+                SizedBox(width: 15),
+                Text("AI Health Advisor",
                     style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 18,
@@ -582,7 +582,7 @@ class _RefinedResultScreenState extends State<RefinedResultScreen> {
             ...widget.userSymptoms
                 .map((s) =>
                     _buildDataTile(s, "YES", Icons.check_circle, Colors.green))
-                .toList(),
+                ,
 
             const SizedBox(height: 30),
 

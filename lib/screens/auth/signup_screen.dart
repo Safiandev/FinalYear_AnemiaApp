@@ -23,6 +23,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   bool _obscurePassword = true;
   bool _isLoading = false;
+  String? _selectedGender;
 
   // Firebase Instances
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -42,14 +43,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
         password: _passwordController.text.trim(),
       );
 
+      // ✉️ SEND EMAIL VERIFICATION LINK
+      await userCredential.user?.sendEmailVerification();
+
       String uid = userCredential.user!.uid;
 
       // 2. Firestore Database mein Name aur Age save karna
+      // Is se data permanent save ho jayega
+      // 2. Firestore Database mein Name, Age aur Gender save karna
       // Is se data permanent save ho jayega
       await _firestore.collection('users').doc(uid).set({
         'uid': uid,
         'name': _nameController.text.trim(),
         'age': _ageController.text.trim(),
+        'gender': _selectedGender, // ✅ Gender bhi save ho raha hai
         'email': _emailController.text.trim(),
         'createdAt': FieldValue.serverTimestamp(),
       });
@@ -59,9 +66,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
       // 3. Success Message dikhana
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Account created successfully!'),
+          content:
+              Text('Account created! Please verify your email before login.'),
           backgroundColor: Colors.green,
-          duration: Duration(seconds: 2),
+          duration: Duration(seconds: 3),
         ),
       );
 
@@ -175,6 +183,26 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     return null;
                   },
                   decoration: _inputStyle('24', Icons.calendar_today),
+                ),
+                const SizedBox(height: 20),
+
+                // ✅ Gender Field (Hemoglobin normal ranges gender ke hisaab se alag hote hain)
+                _buildFieldTitle('Gender'),
+                DropdownButtonFormField<String>(
+                  value: _selectedGender,
+                  validator: (value) =>
+                      value == null ? 'Please select your gender' : null,
+                  decoration: _inputStyle('Select Gender', Icons.wc),
+                  items: const [
+                    DropdownMenuItem(value: 'Male', child: Text('Male')),
+                    DropdownMenuItem(value: 'Female', child: Text('Female')),
+                    DropdownMenuItem(value: 'Other', child: Text('Other')),
+                  ],
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedGender = value;
+                    });
+                  },
                 ),
                 const SizedBox(height: 20),
 
