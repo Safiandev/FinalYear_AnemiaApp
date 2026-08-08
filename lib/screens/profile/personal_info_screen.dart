@@ -358,7 +358,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
 
   Widget genderDropdown() {
     return DropdownButtonFormField<String>(
-      value: selectedGender,
+      initialValue: selectedGender,
       style: const TextStyle(
         fontSize: 14,
         color: Color(0xFF0F172A),

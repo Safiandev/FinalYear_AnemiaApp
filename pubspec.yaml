@@ -10,6 +10,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  tflite_flutter: ^0.11.0
   shared_preferences: ^2.5.4
   flutter_local_notifications: ^17.2.2
   timezone: ^0.9.4
@@ -45,6 +46,7 @@ flutter:
   assets:
     - assets/eyelid_guide.png.png
     - assets/default_avatar2.jpeg
+    - assets/model/anemia_model.tflite
 
 flutter_launcher_icons:
   android: "launcher_icon"

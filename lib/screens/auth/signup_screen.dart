@@ -189,7 +189,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 // ✅ Gender Field (Hemoglobin normal ranges gender ke hisaab se alag hote hain)
                 _buildFieldTitle('Gender'),
                 DropdownButtonFormField<String>(
-                  value: _selectedGender,
+                  initialValue: _selectedGender,
                   validator: (value) =>
                       value == null ? 'Please select your gender' : null,
                   decoration: _inputStyle('Select Gender', Icons.wc),

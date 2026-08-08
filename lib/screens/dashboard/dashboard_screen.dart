@@ -91,15 +91,18 @@ class _DashboardScreenState extends State<DashboardScreen> with RouteAware {
     }
   }
 
-  // Safe Helper to extract numeric Hb Value from Firestore document map
-  double _extractHbValue(Map<String, dynamic> data) {
-    var raw = data['hbValue'] ??
-        data['hb_level'] ??
-        data['hb'] ??
-        data['hemoglobin'] ??
-        data['result'];
+// ✅ Status ko Firestore document se nikalna (refinedStatus > statusLabel)
+  String _extractStatus(Map<String, dynamic> data) {
+    return data['refinedStatus']?.toString() ??
+        data['statusLabel']?.toString() ??
+        'Unknown';
+  }
 
+  // ✅ Confidence ko Firestore document se nikalna (refinedConfidence > confidence)
+  double _extractConfidence(Map<String, dynamic> data) {
+    var raw = data['refinedConfidence'] ?? data['confidence'];
     if (raw == null) return 0.0;
+    if (raw is num) return raw.toDouble();
     return double.tryParse(raw.toString().replaceAll(RegExp(r'[^0-9.]'), '')) ??
         0.0;
   }
@@ -120,7 +123,7 @@ class _DashboardScreenState extends State<DashboardScreen> with RouteAware {
           padding: const EdgeInsets.only(left: 16),
           child: Row(
             children: [
-             GestureDetector(
+              GestureDetector(
                 onTap: () {
                   Navigator.push(
                     context,
@@ -137,10 +140,10 @@ class _DashboardScreenState extends State<DashboardScreen> with RouteAware {
                     return CircleAvatar(
                       radius: 18,
                       backgroundColor: Colors.blue,
-                      backgroundImage: (photoBase64 != null &&
-                              photoBase64.trim().isNotEmpty)
-                          ? MemoryImage(base64Decode(photoBase64))
-                          : null,
+                      backgroundImage:
+                          (photoBase64 != null && photoBase64.trim().isNotEmpty)
+                              ? MemoryImage(base64Decode(photoBase64))
+                              : null,
                       child: (photoBase64 == null || photoBase64.trim().isEmpty)
                           ? const Icon(Icons.person, color: Colors.white)
                           : null,
@@ -438,19 +441,16 @@ class _DashboardScreenState extends State<DashboardScreen> with RouteAware {
                 final bool hasReports = reports.isNotEmpty;
                 final bool hasMultipleReports = reports.length > 1;
 
-                double latestLevel = 0.0;
-                double previousLevel = 0.0;
+                String latestStatus = 'Unknown';
+                double latestConfidence = 0.0;
 
                 if (hasReports) {
-                  latestLevel = _extractHbValue(reports.last);
+                  latestStatus = _extractStatus(reports.last);
+                  latestConfidence = _extractConfidence(reports.last);
                 }
 
-                if (hasMultipleReports) {
-                  previousLevel = _extractHbValue(reports[reports.length - 2]);
-                }
-
-                double difference = latestLevel - previousLevel;
-                bool isImproved = difference >= 0;
+                bool isAnemic = latestStatus == 'Anemic';
+                Color statusColor = isAnemic ? Colors.red : Colors.green;
 
                 return Container(
                   padding: const EdgeInsets.all(18),
@@ -475,7 +475,7 @@ class _DashboardScreenState extends State<DashboardScreen> with RouteAware {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const Text(
-                                'Hemoglobin Level',
+                                'Latest Scan Result',
                                 style:
                                     TextStyle(fontSize: 13, color: Colors.grey),
                               ),
@@ -483,58 +483,30 @@ class _DashboardScreenState extends State<DashboardScreen> with RouteAware {
                               Row(
                                 children: [
                                   Text(
-                                    latestLevel > 0
-                                        ? latestLevel.toStringAsFixed(1)
-                                        : "0.0",
-                                    style: const TextStyle(
-                                      fontSize: 24,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  const Text(
-                                    ' g/dL',
+                                    latestStatus,
                                     style: TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.grey,
-                                      fontWeight: FontWeight.w500,
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.bold,
+                                      color: statusColor,
                                     ),
                                   ),
                                   const SizedBox(width: 8),
-                                  if (hasMultipleReports)
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 8, vertical: 3),
-                                      decoration: BoxDecoration(
-                                        color: isImproved
-                                            ? Colors.green.shade50
-                                            : Colors.red.shade50,
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      child: Row(
-                                        children: [
-                                          Icon(
-                                            isImproved
-                                                ? Icons.arrow_upward
-                                                : Icons.arrow_downward,
-                                            size: 12,
-                                            color: isImproved
-                                                ? Colors.green
-                                                : Colors.red,
-                                          ),
-                                          const SizedBox(width: 2),
-                                          Text(
-                                            '${isImproved ? '+' : ''}${difference.toStringAsFixed(1)}',
-                                            style: TextStyle(
-                                              fontSize: 11,
-                                              color: isImproved
-                                                  ? Colors.green
-                                                  : Colors.red,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ],
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 8, vertical: 3),
+                                    decoration: BoxDecoration(
+                                      color: statusColor.withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: Text(
+                                      '${latestConfidence.toStringAsFixed(0)}%',
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        color: statusColor,
+                                        fontWeight: FontWeight.bold,
                                       ),
                                     ),
+                                  ),
                                 ],
                               ),
                             ],
@@ -560,11 +532,13 @@ class _DashboardScreenState extends State<DashboardScreen> with RouteAware {
 
                       const SizedBox(height: 20),
 
-                      // LINE CHART (fl_chart)
+                      // LINE CHART (fl_chart) — Confidence % trend
                       SizedBox(
                         height: 90,
                         child: LineChart(
                           LineChartData(
+                            minY: 0,
+                            maxY: 100,
                             gridData: const FlGridData(show: false),
                             titlesData: const FlTitlesData(show: false),
                             borderData: FlBorderData(show: false),
@@ -573,7 +547,7 @@ class _DashboardScreenState extends State<DashboardScreen> with RouteAware {
                               LineChartBarData(
                                 spots: reports.asMap().entries.map((entry) {
                                   int index = entry.key;
-                                  double val = _extractHbValue(entry.value);
+                                  double val = _extractConfidence(entry.value);
                                   return FlSpot(index.toDouble(), val);
                                 }).toList(),
                                 isCurved: true,
@@ -582,6 +556,21 @@ class _DashboardScreenState extends State<DashboardScreen> with RouteAware {
                                 isStrokeCapRound: true,
                                 dotData: FlDotData(
                                   show: reports.length < 6,
+                                  getDotPainter:
+                                      (spot, percent, barData, index) {
+                                    final bool isAnemicPoint = index >= 0 &&
+                                        index < reports.length &&
+                                        _extractStatus(reports[index]) ==
+                                            'Anemic';
+                                    return FlDotCirclePainter(
+                                      radius: 4,
+                                      color: isAnemicPoint
+                                          ? Colors.red
+                                          : Colors.green,
+                                      strokeWidth: 2,
+                                      strokeColor: Colors.white,
+                                    );
+                                  },
                                 ),
                                 belowBarData: BarAreaData(
                                   show: true,

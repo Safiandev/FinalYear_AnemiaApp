@@ -368,7 +368,7 @@ class _MedicalHistoryScreenState extends State<MedicalHistoryScreen> {
                       ),
                     ),
                     value: tempIron == "Yes",
-                    activeColor: const Color(0xFF2563EB),
+                    activeThumbColor: const Color(0xFF2563EB),
                     onChanged: (val) =>
                         setSheetState(() => tempIron = val ? "Yes" : "No"),
                   ),
@@ -575,7 +575,7 @@ class _MedicalHistoryScreenState extends State<MedicalHistoryScreen> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 14),
       child: DropdownButtonFormField<String>(
-        value: options.contains(currentVal) ? currentVal : options[0],
+        initialValue: options.contains(currentVal) ? currentVal : options[0],
         style: const TextStyle(fontSize: 14, color: Color(0xFF0F172A)),
         decoration: InputDecoration(
           labelText: label,
